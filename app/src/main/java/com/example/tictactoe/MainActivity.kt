@@ -8,7 +8,7 @@ import android.widget.TextView
 import com.example.xogame.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
-
+    
     private lateinit var binding: ActivityMainBinding
     private val player1 = 0
     private val player2 = 1
@@ -20,18 +20,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var player1Score: TextView
     private lateinit var player2Score: TextView
 
-
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
 
-        filledPositions = intArrayOf(-1,-1,-1,-1,-1,-1,-1,-1,-1)
-
+        filledPositions = intArrayOf(-1, -1, -1, -1, -1, -1, -1, -1, -1)
         playerStatus = binding.playerStatus
 
-        // playing Buttons
+        // Playing Buttons
         binding.btn0.setOnClickListener(this)
         binding.btn1.setOnClickListener(this)
         binding.btn2.setOnClickListener(this)
@@ -42,15 +41,18 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         binding.btn7.setOnClickListener(this)
         binding.btn8.setOnClickListener(this)
 
-        // Player 1 & 2 scores
+        // Player 1 & 2 Scores
         player1Score = binding.playerOneScore
         player2Score = binding.playerTwoScore
 
-        // Reset button
+        // Reset Button
         binding.resetGame.setOnClickListener {
-            playerStatus.text = "It's Draw"
-
             resetGameBoard()
+            playerStatus.text = "The game was reseted"
+            player1Score.text = "0"
+            player2Score.text = "0"
+            score1 = 0
+            score2 = 0
         }
     }
 
@@ -63,52 +65,53 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         filledPositions[tagButton] = activePlayer
 
-        if(activePlayer == player1) {
+        if (activePlayer == player1) {
             clickedBtn.text = "X"
             activePlayer = player2
         } else {
             clickedBtn.text = "O"
             activePlayer = player1
         }
-        chickWinner()
-
+        if(checkWinner() == false) {
+            if (-1 !in filledPositions) {
+                resetGameBoard()
+                playerStatus.text = "It's Draw"
+            }
+        }
     }
 
-    private fun chickWinner() {
-        val winningPositions = arrayOf(intArrayOf(0,1,2), intArrayOf(3,4,5), intArrayOf(6,7,8), //Horizontal
-                                       intArrayOf(0,3,6), intArrayOf(1,4,7), intArrayOf(2,5,8), //vertical
-                                       intArrayOf(0,4,8), intArrayOf(2,4,6)                     //Cross
-        )
-
-        for ( i in winningPositions.indices) {
+    private fun checkWinner(): Boolean {
+        val winningPositions = arrayOf(intArrayOf(0, 1, 2), intArrayOf(3, 4, 5), intArrayOf(6, 7, 8), // Horizontal
+                                       intArrayOf(0, 3, 6), intArrayOf(1, 4, 7), intArrayOf(2, 5, 8), // Vertical
+                                       intArrayOf(0, 4, 8), intArrayOf(2, 4, 6)) // Cross
+        for (i in winningPositions.indices) {
             val winningPos1 = winningPositions[i][0]
             val winningPos2 = winningPositions[i][1]
             val winningPos3 = winningPositions[i][2]
 
-            if(filledPositions[winningPos1] == filledPositions[winningPos2] && filledPositions[winningPos2] == filledPositions[winningPos3]) {
-                if (filledPositions[winningPos1] != -1){
+            if (filledPositions[winningPos1] == filledPositions[winningPos2] && filledPositions[winningPos2] == filledPositions[winningPos3]) {
+                if (filledPositions[winningPos1] != -1) {
                     if (filledPositions[winningPos1] == player1) {
                         playerStatus.text = "Player 1 won the last game"
                         score1 += 1
                         player1Score.text = score1.toString()
                         resetGameBoard()
-                    } else {
+                        return true
+                    } else if (filledPositions[winningPos1] == player2) {
                         playerStatus.text = "Player 2 won the last game"
                         score2 += 1
                         player2Score.text = score2.toString()
                         resetGameBoard()
+                        return true
                     }
                 }
-
             }
-
         }
-
-
+        return false
     }
 
     fun resetGameBoard() {
-        filledPositions = intArrayOf(-1,-1,-1,-1,-1,-1,-1,-1,-1)
+        filledPositions = intArrayOf(-1, -1, -1, -1, -1, -1, -1, -1, -1)
         activePlayer = player1
 
         binding.btn0.text = ""
@@ -120,20 +123,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         binding.btn6.text = ""
         binding.btn7.text = ""
         binding.btn8.text = ""
+
+
+
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
